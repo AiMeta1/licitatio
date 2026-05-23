@@ -41,7 +41,12 @@ export default function AdminLayout({ children }) {
 
     check();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(() => check());
+    // Reage apenas a SIGNED_OUT — evita loop com TOKEN_REFRESHED/INITIAL_SESSION.
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        if (mounted) setState({ loading: false, user: null, isAdmin: false, error: null });
+      }
+    });
     return () => {
       mounted = false;
       listener.subscription.unsubscribe();
