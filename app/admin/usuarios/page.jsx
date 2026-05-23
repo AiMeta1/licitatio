@@ -121,6 +121,8 @@ export default function UsuariosPage() {
   const startEdit = (p) => {
     setEditingId(p.id);
     setEditValues({
+      nome: p.nome || '',
+      cargo: p.cargo || '',
       role: p.role,
       manager_id: p.manager_id || '',
       ativo: p.ativo !== false,
@@ -141,6 +143,8 @@ export default function UsuariosPage() {
       return;
     }
     const updates = {
+      nome: editValues.nome.trim() || null,
+      cargo: editValues.cargo.trim() || null,
       role: editValues.role,
       manager_id: editValues.manager_id || null,
       ativo: editValues.ativo,
@@ -205,13 +209,35 @@ export default function UsuariosPage() {
             <td className="py-3 px-3" style={{ paddingLeft: `${12 + depth * 24}px` }}>
               <div className="flex items-center gap-2">
                 {depth > 0 ? <ChevronRight size={14} className="text-slate-400" /> : null}
-                <div>
-                  <div className="font-medium text-slate-900">{p.nome || '(sem nome)'}</div>
-                  <div className="text-xs text-slate-500">{p.email || '—'}</div>
+                <div className="flex-1 min-w-0">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editValues.nome}
+                      onChange={(e) => setEditValues((v) => ({ ...v, nome: e.target.value }))}
+                      placeholder="Nome"
+                      className="w-full border border-slate-300 rounded-md px-2 py-1 text-sm font-medium"
+                    />
+                  ) : (
+                    <div className="font-medium text-slate-900">{p.nome || '(sem nome)'}</div>
+                  )}
+                  <div className="text-xs text-slate-500 mt-0.5">{p.email || '—'}</div>
                 </div>
               </div>
             </td>
-            <td className="py-3 px-3 text-sm text-slate-600">{p.cargo || '—'}</td>
+            <td className="py-3 px-3 text-sm text-slate-600">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editValues.cargo}
+                  onChange={(e) => setEditValues((v) => ({ ...v, cargo: e.target.value }))}
+                  placeholder="Cargo"
+                  className="w-full border border-slate-300 rounded-md px-2 py-1 text-sm"
+                />
+              ) : (
+                p.cargo || '—'
+              )}
+            </td>
             <td className="py-3 px-3">
               {isEditing ? (
                 <select
@@ -346,7 +372,7 @@ export default function UsuariosPage() {
           toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
           toast.type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-800' :
           'bg-blue-50 border-blue-200 text-blue-800'
-        }`}>
+           }`}>
           <CheckCircle2 size={16} /> {toast.msg}
         </div>
       ) : null}
